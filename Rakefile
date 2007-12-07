@@ -3,13 +3,13 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'rake/testtask'
-require 'hoe'
+require 'hoe' if ENV['VERSION']
 require 'fileutils'
 include FileUtils
 
 name = "fast_xs"
 rev = `git describe 2>/dev/null`.chomp rescue nil
-version = ENV['VERSION'] || "0.2" + (rev && rev.length > 0 ? "-#{rev}" : "")
+version = ENV['VERSION'] || "0.3" + (rev && rev.length > 0 ? "-#{rev}" : "")
 pkg = "#{name}-#{version}"
 bin = "*.{so,o}"
 archlib = "lib/#{::Config::CONFIG['arch']}"
@@ -20,6 +20,7 @@ rdoc_opts = ['--quiet', '--title', 'fast_xs notes', '--main', 'README',
 pkg_files = %w(CHANGELOG COPYING README Rakefile) +
             Dir.glob("{test,lib}/**/*.rb") +
             Dir.glob("ext/**/*.{c,rb}")
+
 
 spec = Gem::Specification.new do |s|
   s.name = name
@@ -36,6 +37,18 @@ spec = Gem::Specification.new do |s|
   s.files = pkg_files
   s.require_paths = [archlib, "lib"]
   s.extensions = FileList["ext/**/extconf.rb"].to_a
+end
+
+if ENV['VERSION']
+  sh('git ls-files > Manifest.txt')
+  hoe = Hoe.new(name, version) do |p|
+    p.author = spec.author
+    p.description = spec.description
+    p.email = spec.email
+    p.summary = spec.summary
+    p.url = spec.homepage
+    p.rubyforge_name = 'fast-xs'
+  end
 end
 
 desc "Does a full compile, test run"
