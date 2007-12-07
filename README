@@ -1,0 +1,18 @@
+= fast_xs, a fast C extension for cleaning XML
+
+== Overview
+
+  The original fast_xs method is based on the xchar code by Sam Ruby:
+
+    http://intertwingly.net/stories/2005/09/28/xchar.rb
+    http://intertwingly.net/blog/2005/09/28/XML-Cleansing
+
+  _why also packages a slightly modified version in the latest version
+  of Hpricot (not-yet-released) that also escapes '"' to "&quot;" (which
+  is optional).
+
+  This is an exact translation (to the best of my knowledge :) of Sam's
+  original implementation, so it does not escape "&quot;".  The version
+  of XML::Builder packaged with Rails also uses Sam's version, and
+  XML::Builder as packaged in Rails 2.0 will be automatically use
+  fast_xs if available.

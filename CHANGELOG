@@ -1,0 +1,8 @@
+= 0.2
+=== 6th December, 2007
+* First real release
+* added fast_xs_html and fast_xs_cgi methods
+
+= 0.1
+=== 3rd October, 2007
+* initial implementation, not officially released
