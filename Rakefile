@@ -8,13 +8,18 @@ require 'fileutils'
 include FileUtils
 
 name = "fast_xs"
-rev = `git describe 2>/dev/null`.chomp rescue nil
-version = ENV['VERSION'] || "0.3" + (rev && rev.length > 0 ? "-#{rev}" : "")
+begin
+  rev = `git rev-list -1 HEAD --pretty=format:%ct`
+  rev = Time.at(rev.split("\n")[1].to_i).strftime('%Y%m%d.%H%M%S')
+rescue
+end
+version ||= ENV['VERSION'] || '0.3' + (rev && rev.length > 0 ? ".#{rev}" : '')
 pkg = "#{name}-#{version}"
 bin = "*.{so,o}"
 archlib = "lib/#{::Config::CONFIG['arch']}"
 CLEAN.include ["ext/fast_xs/#{bin}", "lib/**/#{bin}",
-               'ext/fast_xs/Makefile', '**/.*.sw?', '*.gem', '.config']
+               'ext/fast_xs/Makefile', '**/.*.sw?', '*.gem', '.config',
+               'pkg']
 rdoc_opts = ['--quiet', '--title', 'fast_xs notes', '--main', 'README',
              '--inline-source']
 pkg_files = %w(CHANGELOG COPYING README Rakefile) +
@@ -29,7 +34,7 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = true
   s.rdoc_options += rdoc_opts
   s.extra_rdoc_files = ["README", "CHANGELOG", "COPYING"]
-  s.summary = "escape faster!"
+  s.summary = "excessively fast escaping"
   s.description = s.summary
   s.author = "Eric Wong"
   s.email = 'normalperson@yhbt.net'
