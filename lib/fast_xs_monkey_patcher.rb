@@ -5,11 +5,11 @@ if defined?(CGI)
   class CGI
 
     def CGI::escapeHTML(value)
-      value.to_s.fast_xs_html
+      value.fast_xs_html
     end
 
     def CGI::escape(value)
-      value.to_s.fast_xs_cgi
+      value.fast_xs_cgi
     end
 
   end
