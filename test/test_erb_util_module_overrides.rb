@@ -24,6 +24,15 @@ class TestErbUtilModuleOverrides < Test::Unit::TestCase
     assert_equal "\xEF\xBF\xBF", html_escape("\xEF\xBF\xBF")
   end
 
+  def test_escape_url
+    assert_equal 'hello%3Dworld', url_encode('hello=world')
+    assert_equal '%20', url_encode(' ')
+    assert_equal '%2B', url_encode('+')
+    assert_equal '%2C', url_encode(',')
+    assert_equal 'hello-world', url_encode('hello-world')
+    assert_equal 'H3LL0%20W0RLD', url_encode('H3LL0 W0RLD')
+  end
+
 end
 
 

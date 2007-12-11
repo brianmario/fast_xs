@@ -226,11 +226,7 @@ static VALUE fast_xs_html(VALUE self)
 	 (x >= '0' && x <= '9') || \
 	 (x == '.' || x == '-' || x == '_'))
 
-/*
- * Compatible with CGI::escape(), this iterates through each byte, so
- * multibyte character sets may not supported (but UTF-8 should be).
- */
-static VALUE fast_xs_cgi(VALUE self)
+static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 {
 	struct RString *string = RSTRING(self);
 	long i;
@@ -239,7 +235,7 @@ static VALUE fast_xs_cgi(VALUE self)
 	char *new_str;
 
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
-		if (likely(CGI_URI_OK(*s) || *s == ' '))
+		if (likely(CGI_URI_OK(*s) || (space_to_plus && *s == ' ')))
 			++new_len;
 		else /* we'll only get <= "%FF" here */
 			new_len += 3;
@@ -250,7 +246,7 @@ static VALUE fast_xs_cgi(VALUE self)
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s)))
 			*new_str++ = *s;
-		else if (*s == ' ')
+		else if (space_to_plus && *s == ' ')
 			*new_str++ = '+';
 		else {
 			static const char cgi_digitmap[] = "0123456789ABCDEF";
@@ -261,6 +257,25 @@ static VALUE fast_xs_cgi(VALUE self)
 		}
 	}
 	return rb_str_new(new_str - new_len, new_len);
+}
+
+/*
+ * Compatible with ERB::Util::url_encode / ERB::Util::u, this iterates
+ * through each byte, so multibyte character sets may not supported (but
+ * UTF-8 should be).
+ */
+static VALUE fast_xs_url(VALUE self)
+{
+	return _xs_uri_encode(self, 0);
+}
+
+/*
+ * Compatible with CGI::escape(), this iterates through each byte, so
+ * multibyte character sets may not supported (but UTF-8 should be).
+ */
+static VALUE fast_xs_cgi(VALUE self)
+{
+	return _xs_uri_encode(self, 1);
 }
 
 void Init_fast_xs(void)
@@ -276,4 +291,5 @@ void Init_fast_xs(void)
 	rb_define_method(rb_cString, "fast_xs", fast_xs, 0);
 	rb_define_method(rb_cString, "fast_xs_html", fast_xs_html, 0);
 	rb_define_method(rb_cString, "fast_xs_cgi", fast_xs_cgi, 0);
+	rb_define_method(rb_cString, "fast_xs_url", fast_xs_url, 0);
 }

@@ -27,6 +27,14 @@ if defined?(ERB::Util)
     module_function :h
     module_function :html_escape
 
+    def url_encode(value)
+      value.to_s.fast_xs_url
+    end
+    alias u url_encode
+    module_function :u
+    module_function :url_encode
+
+
   end
 
 end
