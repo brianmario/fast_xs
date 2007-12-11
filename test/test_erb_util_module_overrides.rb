@@ -33,6 +33,13 @@ class TestErbUtilModuleOverrides < Test::Unit::TestCase
     assert_equal 'H3LL0%20W0RLD', url_encode('H3LL0 W0RLD')
   end
 
+  def test_large_strings
+    if ENV['LARGE_STRING_TEST']
+      assert u('&' * (8192 * 1024))
+      assert h('&' * (8192 * 1024))
+    end
+  end
+
 end
 
 

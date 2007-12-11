@@ -2,9 +2,12 @@
 
 #include <ruby.h>
 #include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 static ID unpack_id;
 static VALUE U_fmt, C_fmt;
+static rlim_t alloca_limit = 4096; /* very small default */
 
 /* give GCC hints for better branch prediction
  * (we layout branches so that ASCII characters are handled faster) */
@@ -157,18 +160,24 @@ static VALUE fast_xs(VALUE self)
 	char *s, *c;
 	size_t s_len = 0;
 	VALUE *tmp;
+	VALUE rv;
 
 	array = RARRAY(rb_rescue(unpack_utf8, self, unpack_uchar, self));
 
 	for (tmp = array->ptr, i = array->len; --i >= 0; tmp++)
 		s_len += escaped_len(NUM2INT(*tmp));
 
-	c = s = alloca(s_len);
+	c = s = unlikely(s_len > alloca_limit) ? malloc(s_len) : alloca(s_len);
 
 	for (tmp = array->ptr, i = array->len; --i >= 0; tmp++)
 		c += escape(c, NUM2INT(*tmp));
 
-	return rb_str_new(s, s_len);
+	rv = rb_str_new(s, s_len);
+
+	if (unlikely(s_len > alloca_limit))
+		free(s);
+
+	return rv;
 }
 
 /*
@@ -184,6 +193,7 @@ static VALUE fast_xs_html(VALUE self)
 	char *s;
 	size_t new_len = 0;
 	char *new_str;
+	VALUE rv;
 
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
 		if (unlikely(*s == '&'))
@@ -196,7 +206,8 @@ static VALUE fast_xs_html(VALUE self)
 			new_len += 1;
 	}
 
-	new_str = alloca(new_len);
+	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
+	                                           : alloca(new_len);
 
 #define append_const(buf, x) do { \
 	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
@@ -217,7 +228,12 @@ static VALUE fast_xs_html(VALUE self)
 
 #undef append_const
 
-	return rb_str_new(new_str - new_len, new_len);
+	rv = rb_str_new(new_str - new_len, new_len);
+
+	if (unlikely(new_len > alloca_limit))
+		free(new_str - new_len);
+
+	return rv;
 }
 
 #define CGI_URI_OK(x) \
@@ -233,6 +249,7 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 	char *s;
 	size_t new_len = 0;
 	char *new_str;
+	VALUE rv;
 
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s) || (space_to_plus && *s == ' ')))
@@ -241,7 +258,8 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 			new_len += 3;
 	}
 
-	new_str = alloca(new_len);
+	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
+	                                           : alloca(new_len);
 
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s)))
@@ -256,7 +274,13 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 			new_str += 3;
 		}
 	}
-	return rb_str_new(new_str - new_len, new_len);
+
+	rv = rb_str_new(new_str - new_len, new_len);
+
+	if (unlikely(new_len > alloca_limit))
+		free(new_str - new_len);
+
+	return rv;
 }
 
 /*
@@ -280,7 +304,13 @@ static VALUE fast_xs_cgi(VALUE self)
 
 void Init_fast_xs(void)
 {
+	struct rlimit rlim;
+
 	assert(cp_1252[159 - 128] == 376); /* just in case I skipped a line */
+
+	/* fairly conservative stack estimation IMHO... */
+	if (!getrlimit(RLIMIT_STACK, &rlim) && (rlim.rlim_cur > 0x80000))
+		alloca_limit = rlim.rlim_cur - (rlim.rlim_cur / 16);
 
 	unpack_id = rb_intern("unpack");
 	U_fmt = rb_str_new("U*", 2);
