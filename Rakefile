@@ -13,7 +13,7 @@ begin
   rev = Time.at(rev.split("\n")[1].to_i).strftime('%Y%m%d.%H%M%S')
 rescue
 end
-version ||= ENV['VERSION'] || '0.3' + (rev && rev.length > 0 ? ".#{rev}" : '')
+version ||= ENV['VERSION'] || '0.4' + (rev && rev.length > 0 ? ".#{rev}" : '')
 pkg = "#{name}-#{version}"
 bin = "*.{so,o}"
 archlib = "lib/#{::Config::CONFIG['arch']}"
