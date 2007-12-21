@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include "ruby_1_9_compat.h"
 
 static ID unpack_id;
 static VALUE U_fmt, C_fmt;
@@ -141,15 +142,17 @@ static VALUE unpack_uchar(VALUE self)
 static VALUE fast_xs(VALUE self)
 {
 	long i;
-	struct RArray *array;
+	VALUE array;
 	char *s, *c;
 	size_t s_len;
 	VALUE *tmp;
 	VALUE rv;
 
-	array = RARRAY(rb_rescue(unpack_utf8, self, unpack_uchar, self));
+	array = rb_rescue(unpack_utf8, self, unpack_uchar, self);
 
-	for (tmp = array->ptr, s_len = i = array->len; --i >= 0; tmp++) {
+	for (tmp = RARRAY_PTR(array), s_len = i = RARRAY_LEN(array);
+	     --i >= 0;
+	     tmp++) {
 		int n = NUM2INT(*tmp);
 		if (likely(n < 128)) {
 			if (unlikely(n == '&'))
@@ -167,7 +170,7 @@ static VALUE fast_xs(VALUE self)
 
 	c = s = unlikely(s_len > alloca_limit) ? malloc(s_len) : alloca(s_len);
 
-	for (tmp = array->ptr, i = array->len; --i >= 0; tmp++)
+	for (tmp = RARRAY_PTR(array), i = RARRAY_LEN(array); --i >= 0; tmp++)
 		c += escape(c, NUM2INT(*tmp));
 
 	rv = rb_str_new(s, s_len);
@@ -186,14 +189,13 @@ static VALUE fast_xs(VALUE self)
  */
 static VALUE fast_xs_html(VALUE self)
 {
-	struct RString *string = RSTRING(self);
 	long i;
 	char *s;
-	size_t new_len = string->len;
+	size_t new_len = RSTRING_LEN(self);
 	char *new_str;
 	VALUE rv;
 
-	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
+	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (unlikely(*s == '&'))
 			new_len += (sizeof("&amp;") - 2);
 		else if (unlikely(*s == '<' || *s == '>'))
@@ -209,7 +211,7 @@ static VALUE fast_xs_html(VALUE self)
 	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
 } while (0)
 
-	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
+	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (unlikely(*s == '&'))
 			append_const(new_str, "&amp;");
 		else if (unlikely(*s == '<'))
@@ -240,14 +242,13 @@ static VALUE fast_xs_html(VALUE self)
 
 static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 {
-	struct RString *string = RSTRING(self);
 	long i;
 	char *s;
-	size_t new_len = string->len;
+	size_t new_len = RSTRING_LEN(self);
 	char *new_str;
 	VALUE rv;
 
-	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
+	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s)) || (space_to_plus && *s == ' '))
 			continue;
 		new_len += 2;
@@ -256,7 +257,7 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
 	                                           : alloca(new_len);
 
-	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
+	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s)))
 			*new_str++ = *s;
 		else if (space_to_plus && *s == ' ')
