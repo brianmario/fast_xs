@@ -10,6 +10,12 @@ static ID unpack_id;
 static VALUE U_fmt, C_fmt;
 static rlim_t alloca_limit = 4096; /* very small default */
 
+#define xs_alloc(size) \
+	unlikely((size) > alloca_limit) ? malloc(size) : alloca(size)
+
+#define xs_free(ptr, size) \
+	do { if (unlikely((size) > alloca_limit)) free(ptr); } while (0)
+
 /* give GCC hints for better branch prediction
  * (we layout branches so that ASCII characters are handled faster) */
 #if defined(__GNUC__) && (__GNUC__ >= 3)
@@ -175,8 +181,7 @@ static VALUE fast_xs(VALUE self)
 
 	rv = rb_str_new(s, s_len);
 
-	if (unlikely(s_len > alloca_limit))
-		free(s);
+	xs_free(s, s_len);
 
 	return rv;
 }
@@ -204,8 +209,7 @@ static VALUE fast_xs_html(VALUE self)
 			new_len += (sizeof("&quot;") - 2);
 	}
 
-	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
-	                                           : alloca(new_len);
+	new_str = xs_alloc(new_len);
 
 #define append_const(buf, x) do { \
 	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
@@ -228,8 +232,7 @@ static VALUE fast_xs_html(VALUE self)
 
 	rv = rb_str_new(new_str - new_len, new_len);
 
-	if (unlikely(new_len > alloca_limit))
-		free(new_str - new_len);
+	xs_free(new_str - new_len, new_len);
 
 	return rv;
 }
@@ -254,8 +257,7 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 		new_len += 2;
 	}
 
-	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
-	                                           : alloca(new_len);
+	new_str = xs_alloc(new_len);
 
 	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s)))
@@ -273,8 +275,7 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 
 	rv = rb_str_new(new_str - new_len, new_len);
 
-	if (unlikely(new_len > alloca_limit))
-		free(new_str - new_len);
+	xs_free(new_str - new_len, new_len);
 
 	return rv;
 }
