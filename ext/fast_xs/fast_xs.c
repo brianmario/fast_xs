@@ -128,21 +128,6 @@ static size_t escape(char *buf, int n)
 	return 1;
 }
 
-static long escaped_len(int n)
-{
-	if (likely(n < 128)) {
-		if (unlikely(n == '&'))
-			return (sizeof("&amp;") - 1);
-		if (unlikely(n == '>' || n == '<'))
-			return (sizeof("&gt;") - 1);
-		return 1;
-	}
-
-	CP_1252_ESCAPE(n);
-
-	return VALID_VALUE(n) ? bytes_for(n) : 1;
-}
-
 static VALUE unpack_utf8(VALUE self)
 {
 	return rb_funcall(self, unpack_id, 1, U_fmt);
@@ -158,14 +143,27 @@ static VALUE fast_xs(VALUE self)
 	long i;
 	struct RArray *array;
 	char *s, *c;
-	size_t s_len = 0;
+	size_t s_len;
 	VALUE *tmp;
 	VALUE rv;
 
 	array = RARRAY(rb_rescue(unpack_utf8, self, unpack_uchar, self));
 
-	for (tmp = array->ptr, i = array->len; --i >= 0; tmp++)
-		s_len += escaped_len(NUM2INT(*tmp));
+	for (tmp = array->ptr, s_len = i = array->len; --i >= 0; tmp++) {
+		int n = NUM2INT(*tmp);
+		if (likely(n < 128)) {
+			if (unlikely(n == '&'))
+				s_len += (sizeof("&amp;") - 2);
+			if (unlikely(n == '>' || n == '<'))
+				s_len += (sizeof("&gt;") - 2);
+			continue;
+		}
+
+		CP_1252_ESCAPE(n);
+
+		if (VALID_VALUE(n))
+			s_len += bytes_for(n) - 1;
+	}
 
 	c = s = unlikely(s_len > alloca_limit) ? malloc(s_len) : alloca(s_len);
 
@@ -191,19 +189,17 @@ static VALUE fast_xs_html(VALUE self)
 	struct RString *string = RSTRING(self);
 	long i;
 	char *s;
-	size_t new_len = 0;
+	size_t new_len = string->len;
 	char *new_str;
 	VALUE rv;
 
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
 		if (unlikely(*s == '&'))
-			new_len += (sizeof("&amp;") - 1);
+			new_len += (sizeof("&amp;") - 2);
 		else if (unlikely(*s == '<' || *s == '>'))
-			new_len += (sizeof("&gt;") - 1);
+			new_len += (sizeof("&gt;") - 2);
 		else if (unlikely(*s == '"'))
-			new_len += (sizeof("&quot;") - 1);
-		else
-			new_len += 1;
+			new_len += (sizeof("&quot;") - 2);
 	}
 
 	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
@@ -247,15 +243,14 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 	struct RString *string = RSTRING(self);
 	long i;
 	char *s;
-	size_t new_len = 0;
+	size_t new_len = string->len;
 	char *new_str;
 	VALUE rv;
 
 	for (s = string->ptr, i = string->len; --i >= 0; ++s) {
-		if (likely(CGI_URI_OK(*s) || (space_to_plus && *s == ' ')))
-			++new_len;
-		else /* we'll only get <= "%FF" here */
-			new_len += 3;
+		if (likely(CGI_URI_OK(*s)) || (space_to_plus && *s == ' '))
+			continue;
+		new_len += 2;
 	}
 
 	new_str = unlikely(new_len > alloca_limit) ? malloc(new_len)
