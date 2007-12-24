@@ -12,6 +12,10 @@ if defined?(CGI)
       value.fast_xs_cgi
     end
 
+    def CGI::unescape(value)
+      value.fast_uxs_cgi
+    end
+
   end
 
 end

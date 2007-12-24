@@ -6,6 +6,29 @@
 #include <sys/resource.h>
 #include "ruby_1_9_compat.h"
 
+/* I don't trust ctype.h when it comes to locale-independence: */
+static __inline__ int is_hex(const int x)
+{
+	return (((x) >= '0' && (x) <= '9') ||
+                ((x) >= 'a' && (x) <= 'f') ||
+		((x) >= 'A' && (x) <= 'F'));
+}
+
+static __inline__ int xtoupper(const int x)
+{
+	return (x >= 'a' && x <= 'f') ? (x & ~0x20) : x;
+}
+
+static __inline__ int hexchar_to_int(const int x)
+{
+	return (x < 'A') ? (x - '0') : (xtoupper(x) - 'A' + 10);
+}
+
+static __inline__ int hexpair_to_int(const int x1, const int x2)
+{
+	return ((hexchar_to_int(x1) << 4) | hexchar_to_int(x2));
+}
+
 static ID unpack_id;
 static VALUE U_fmt, C_fmt;
 static rlim_t alloca_limit = 4096; /* very small default */
@@ -299,6 +322,53 @@ static VALUE fast_xs_cgi(VALUE self)
 	return _xs_uri_encode(self, 1);
 }
 
+static VALUE _uxs_uri(VALUE self, const unsigned int plus_to_space)
+{
+	char *s, *new_str;
+	long i;
+	size_t new_len = RSTRING_LEN(self);
+	VALUE rv;
+
+	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self);
+	     --i >= 0;
+	     ++s) {
+		if (unlikely(*s == '%') &&
+		    likely(is_hex(s[1])) &&
+		    likely(is_hex(s[2]))) {
+			new_len -= 2;
+			s += 2;
+			i -= 2;
+		}
+	}
+
+	new_str = xs_alloc(new_len);
+	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self);
+	     --i >= 0;
+	     ++s, ++new_str) {
+		if (plus_to_space && unlikely(*s == '+'))
+			*new_str = ' ';
+		else if (unlikely(*s == '%') &&
+		         likely(is_hex(s[1])) &&
+			 likely(is_hex(s[2]))) {
+			*new_str = hexpair_to_int(s[1], s[2]);
+			s += 2;
+			i -= 2;
+		} else
+			*new_str = *s;
+	}
+
+	rv = rb_str_new(new_str - new_len, new_len);
+
+	xs_free(s, new_len);
+
+	return rv;
+}
+
+static VALUE fast_uxs_cgi(VALUE self)
+{
+	return _uxs_uri(self, 1);
+}
+
 void Init_fast_xs(void)
 {
 	struct rlimit rlim;
@@ -318,5 +388,6 @@ void Init_fast_xs(void)
 	rb_define_method(rb_cString, "fast_xs", fast_xs, 0);
 	rb_define_method(rb_cString, "fast_xs_html", fast_xs_html, 0);
 	rb_define_method(rb_cString, "fast_xs_cgi", fast_xs_cgi, 0);
+	rb_define_method(rb_cString, "fast_uxs_cgi", fast_uxs_cgi, 0);
 	rb_define_method(rb_cString, "fast_xs_url", fast_xs_url, 0);
 }

@@ -31,6 +31,15 @@ class TestCgiClassOverrides < Test::Unit::TestCase
     assert_equal 'H3LL0+W0RLD', CGI::escape('H3LL0 W0RLD')
   end
 
+  def test_unescape_cgi
+    assert_equal 'hello=world', CGI::unescape('hello%3Dworld')
+    assert_equal ' ', CGI::unescape('+')
+    assert_equal '+', CGI::unescape('%2B')
+    assert_equal ',', CGI::unescape('%2C')
+    assert_equal 'hello-world', CGI::unescape('hello-world')
+    assert_equal 'H3LL0 W0RLD', CGI::unescape('H3LL0+W0RLD')
+  end
+
   def test_large_strings
     if ENV['LARGE_STRING_TEST']
       assert CGI::escape('&' * (8192 * 1024))
