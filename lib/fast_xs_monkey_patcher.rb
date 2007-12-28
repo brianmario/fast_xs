@@ -38,6 +38,21 @@ if defined?(ERB::Util)
     module_function :u
     module_function :url_encode
 
+  end
+
+end
+
+if defined?(Mongrel::HttpRequest)
+
+  class Mongrel::HttpRequest
+
+    def self.unescape(s)
+      s.fast_uxs_cgi
+    end
+
+    def self.escape(s)
+      s.to_s.fast_xs_cgi
+    end
 
   end
 
