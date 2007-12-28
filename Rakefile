@@ -24,7 +24,7 @@ rdoc_opts = ['--quiet', '--title', 'fast_xs notes', '--main', 'README',
              '--inline-source']
 pkg_files = %w(CHANGELOG COPYING README Rakefile) +
             Dir.glob("{test,lib}/**/*.rb") +
-            Dir.glob("ext/**/*.{c,rb}")
+            Dir.glob("ext/**/*.{c,rb,h}")
 
 
 spec = Gem::Specification.new do |s|
