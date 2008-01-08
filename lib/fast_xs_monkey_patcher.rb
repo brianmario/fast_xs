@@ -57,3 +57,14 @@ if defined?(Mongrel::HttpRequest)
   end
 
 end
+
+if defined?(Rack::Utils)
+  module Rack::Utils
+    def unescape(s); s.fast_uxs_cgi; end
+    module_function :unescape
+
+    def escape(s); s.to_s.fast_xs_cgi; end
+    module_function :escape
+  end
+end
+
