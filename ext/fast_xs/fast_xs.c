@@ -10,8 +10,8 @@
 static __inline__ int is_hex(const int x)
 {
 	return (((x) >= '0' && (x) <= '9') ||
-                ((x) >= 'a' && (x) <= 'f') ||
-		((x) >= 'A' && (x) <= 'F'));
+	       ((x) >= 'a' && (x) <= 'f') ||
+	       ((x) >= 'A' && (x) <= 'F'));
 }
 
 static __inline__ int xtoupper(const int x)
@@ -31,13 +31,6 @@ static __inline__ int hexpair_to_int(const int x1, const int x2)
 
 static ID unpack_id;
 static VALUE U_fmt, C_fmt;
-static rlim_t alloca_limit = 4096; /* very small default */
-
-#define xs_alloc(size) \
-	unlikely((size) > alloca_limit) ? malloc(size) : alloca(size)
-
-#define xs_free(ptr, size) \
-	do { if (unlikely((size) > alloca_limit)) free(ptr); } while (0)
 
 /* give GCC hints for better branch prediction
  * (we layout branches so that ASCII characters are handled faster) */
@@ -172,7 +165,7 @@ static VALUE fast_xs(VALUE self)
 {
 	long i;
 	VALUE array;
-	char *s, *c;
+	char *c;
 	size_t s_len;
 	VALUE *tmp;
 	VALUE rv;
@@ -197,14 +190,11 @@ static VALUE fast_xs(VALUE self)
 			s_len += bytes_for(n) - 1;
 	}
 
-	c = s = unlikely(s_len > alloca_limit) ? malloc(s_len) : alloca(s_len);
+	rv = rb_str_new(NULL, s_len);
+	c = RSTRING_PTR(rv);
 
 	for (tmp = RARRAY_PTR(array), i = RARRAY_LEN(array); --i >= 0; tmp++)
 		c += escape(c, NUM2INT(*tmp));
-
-	rv = rb_str_new(s, s_len);
-
-	xs_free(s, s_len);
 
 	return rv;
 }
@@ -232,7 +222,8 @@ static VALUE fast_xs_html(VALUE self)
 			new_len += (sizeof("&quot;") - 2);
 	}
 
-	new_str = xs_alloc(new_len);
+	rv = rb_str_new(NULL, new_len);
+	new_str = RSTRING_PTR(rv);
 
 #define append_const(buf, x) do { \
 	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
@@ -252,10 +243,6 @@ static VALUE fast_xs_html(VALUE self)
 	}
 
 #undef append_const
-
-	rv = rb_str_new(new_str - new_len, new_len);
-
-	xs_free(new_str - new_len, new_len);
 
 	return rv;
 }
@@ -280,7 +267,8 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 		new_len += 2;
 	}
 
-	new_str = xs_alloc(new_len);
+	rv = rb_str_new(NULL, new_len);
+	new_str = RSTRING_PTR(rv);
 
 	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (likely(CGI_URI_OK(*s)))
@@ -295,10 +283,6 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 			new_str += 3;
 		}
 	}
-
-	rv = rb_str_new(new_str - new_len, new_len);
-
-	xs_free(new_str - new_len, new_len);
 
 	return rv;
 }
@@ -341,7 +325,9 @@ static VALUE _uxs_uri(VALUE self, const unsigned int plus_to_space)
 		}
 	}
 
-	new_str = xs_alloc(new_len);
+	rv = rb_str_new(NULL, new_len);
+	new_str = RSTRING_PTR(rv);
+
 	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self);
 	     --i >= 0;
 	     ++s, ++new_str) {
@@ -357,10 +343,6 @@ static VALUE _uxs_uri(VALUE self, const unsigned int plus_to_space)
 			*new_str = *s;
 	}
 
-	rv = rb_str_new(new_str - new_len, new_len);
-
-	xs_free(s, new_len);
-
 	return rv;
 }
 
@@ -371,13 +353,7 @@ static VALUE fast_uxs_cgi(VALUE self)
 
 void Init_fast_xs(void)
 {
-	struct rlimit rlim;
-
 	assert(cp_1252[159 - 128] == 376); /* just in case I skipped a line */
-
-	/* fairly conservative stack estimation IMHO... */
-	if (!getrlimit(RLIMIT_STACK, &rlim) && (rlim.rlim_cur > 0x80000))
-		alloca_limit = rlim.rlim_cur - (rlim.rlim_cur / 16);
 
 	unpack_id = rb_intern("unpack");
 	U_fmt = rb_str_new("U*", 2);
