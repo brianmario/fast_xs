@@ -1,46 +1,13 @@
-#define VERSION	"0.1"
-
 #include <ruby.h>
 #include <assert.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include "ruby_1_9_compat.h"
-
-/* I don't trust ctype.h when it comes to locale-independence: */
-static __inline__ int is_hex(const int x)
-{
-	return (((x) >= '0' && (x) <= '9') ||
-	       ((x) >= 'a' && (x) <= 'f') ||
-	       ((x) >= 'A' && (x) <= 'F'));
-}
-
-static __inline__ int xtoupper(const int x)
-{
-	return (x >= 'a' && x <= 'f') ? (x & ~0x20) : x;
-}
-
-static __inline__ int hexchar_to_int(const int x)
-{
-	return (x < 'A') ? (x - '0') : (xtoupper(x) - 'A' + 10);
-}
-
-static __inline__ int hexpair_to_int(const int x1, const int x2)
-{
-	return ((hexchar_to_int(x1) << 4) | hexchar_to_int(x2));
-}
+#include "fast_xs_type.h"
+#include "gcc.h"
 
 static ID unpack_id;
 static VALUE U_fmt, C_fmt;
-
-/* give GCC hints for better branch prediction
- * (we layout branches so that ASCII characters are handled faster) */
-#if defined(__GNUC__) && (__GNUC__ >= 3)
-#  define likely(x)		__builtin_expect (!!(x), 1)
-#  define unlikely(x)		__builtin_expect (!!(x), 0)
-#else
-#  define unlikely(x)		(x)
-#  define likely(x)		(x)
-#endif
 
 /* pass-through certain characters for CP-1252 */
 #define p(x) (x-128)
