@@ -13,7 +13,7 @@ begin
   rev = Time.at(rev.split("\n")[1].to_i).strftime('%Y%m%d.%H%M%S')
 rescue
 end
-version ||= ENV['VERSION'] || '0.5' + (rev && rev.length > 0 ? ".#{rev}" : '')
+version ||= ENV['VERSION'] || '0.6' + (rev && rev.length > 0 ? ".#{rev}" : '')
 pkg = "#{name}-#{version}"
 bin = "*.{so,o}"
 archlib = "lib/#{::Config::CONFIG['arch']}"
@@ -45,7 +45,11 @@ spec = Gem::Specification.new do |s|
 end
 
 if ENV['VERSION']
+  # FIXME - look for hoe replacement...
+  prev = `git for-each-ref --format='%(refname)' refs/tags | tail -n1`.chomp
+  sh("git shortlog #{prev}..HEAD > History.txt");
   sh('git ls-files > Manifest.txt')
+  File.exists?('README.txt') or File.link('README', 'README.txt')
   hoe = Hoe.new(name, version) do |p|
     p.author = spec.author
     p.description = spec.description
