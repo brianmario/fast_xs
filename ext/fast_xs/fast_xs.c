@@ -1,7 +1,5 @@
 #include <ruby.h>
 #include <assert.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "ruby_1_9_compat.h"
 #include "fast_xs_type.h"
 #include "gcc.h"
