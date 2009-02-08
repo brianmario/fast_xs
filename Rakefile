@@ -22,7 +22,7 @@ CLEAN.include ["ext/**/#{bin}", "lib/**/#{bin}",
                'pkg']
 rdoc_opts = ['--quiet', '--title', 'fast_xs notes', '--main', 'README',
              '--inline-source']
-pkg_files = %w(CHANGELOG COPYING README Rakefile) +
+pkg_files = %w(COPYING README Rakefile) +
             Dir.glob("{test,lib}/**/*.rb") +
             Dir.glob("ext/**/*.{c,rb,h}")
 
@@ -33,7 +33,7 @@ spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
   s.rdoc_options += rdoc_opts
-  s.extra_rdoc_files = ["README", "CHANGELOG", "COPYING"]
+  s.extra_rdoc_files = ["README", "COPYING"]
   s.summary = "excessively fast escaping"
   s.description = s.summary
   s.author = "Eric Wong"
@@ -74,7 +74,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'doc/rdoc'
   rdoc.options += rdoc_opts
   rdoc.main = "README"
-  rdoc.rdoc_files.add ['README', 'CHANGELOG', 'COPYING' ]
+  rdoc.rdoc_files.add ['README', 'COPYING' ]
 end
 
 Rake::GemPackageTask.new(spec) do |p|
