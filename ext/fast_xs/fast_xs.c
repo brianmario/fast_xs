@@ -86,6 +86,8 @@ static size_t escape(char *buf, int n)
 				return_const_len("&lt;");
 			if (unlikely(n == '>'))
 				return_const_len("&gt;");
+			if (unlikely(n == '"'))
+				return_const_len("&quot;");
 			buf[0] = (char)n;
 			return 1;
 		}
@@ -146,6 +148,8 @@ static VALUE fast_xs(VALUE self)
 				s_len += (sizeof("&amp;") - 2);
 			if (unlikely(n == '>' || n == '<'))
 				s_len += (sizeof("&gt;") - 2);
+			if (unlikely(n == '"'))
+				s_len += (sizeof("&quot;") - 2);
 			continue;
 		}
 
