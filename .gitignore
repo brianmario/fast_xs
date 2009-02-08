@@ -4,3 +4,7 @@ setup.rb
 tags
 TAGS
 Manifest.txt
+Makefile
+*.so
+*.o
+*.log
