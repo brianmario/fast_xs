@@ -123,9 +123,9 @@ end
 
 task :install do
   sh %{rake package}
-  sh %{sudo gem install pkg/#{name}-#{version}}
+  sh %{gem install pkg/#{name}-#{version}}
 end
 
 task :uninstall => [:clean] do
-  sh %{sudo gem uninstall #{name}}
+  sh %{gem uninstall #{name}}
 end
