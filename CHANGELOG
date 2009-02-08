@@ -1,3 +1,8 @@
+= 0.7
+=== 7th February, 2009
+* Compatibility with Hpricot version
+* separated extra methods into fast_xs_extra module
+
 = 0.2
 === 6th December, 2007
 * First real release

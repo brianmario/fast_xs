@@ -17,8 +17,8 @@ version ||= ENV['VERSION'] || '0.6' + (rev && rev.length > 0 ? ".#{rev}" : '')
 pkg = "#{name}-#{version}"
 bin = "*.{so,o}"
 archlib = "lib/#{::Config::CONFIG['arch']}"
-CLEAN.include ["ext/fast_xs/#{bin}", "lib/**/#{bin}",
-               'ext/fast_xs/Makefile', '**/.*.sw?', '*.gem', '.config',
+CLEAN.include ["ext/**/#{bin}", "lib/**/#{bin}",
+               'ext/**/Makefile', '**/.*.sw?', '*.gem', '.config',
                'pkg']
 rdoc_opts = ['--quiet', '--title', 'fast_xs notes', '--main', 'README',
              '--inline-source']
@@ -38,7 +38,7 @@ spec = Gem::Specification.new do |s|
   s.description = s.summary
   s.author = "Eric Wong"
   s.email = 'normalperson@yhbt.net'
-  s.homepage = 'http://bogonips.org/fast_xs/'
+  s.homepage = 'http://bogomips.org/fast_xs/'
   s.files = pkg_files
   s.require_paths = [archlib, "lib"]
   s.extensions = FileList["ext/**/extconf.rb"].to_a
@@ -82,7 +82,7 @@ Rake::GemPackageTask.new(spec) do |p|
   p.gem_spec = spec
 end
 
-['fast_xs'].each do |extension|
+%w(fast_xs fast_xs_extra).each do |extension|
   ext = "ext/#{extension}"
   ext_so = "#{ext}/#{extension}.#{Config::CONFIG['DLEXT']}"
   ext_files = FileList[
@@ -114,7 +114,7 @@ task "lib" do
 end
 
 desc "Compiles the Ruby extension"
-task :compile => [:fast_xs] do
+task :compile => %w(fast_xs fast_xs_extra) do
   if Dir.glob(File.join(archlib,"fast_xs.*")).empty?
     STDERR.puts 'Gem failed to build'
     exit(1)

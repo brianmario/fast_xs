@@ -1,4 +1,5 @@
 require 'fast_xs'
+require 'fast_xs_extra'
 
 class CGI
   def CGI::escapeHTML(value); value.fast_xs_html; end
