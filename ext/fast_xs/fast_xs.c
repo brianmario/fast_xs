@@ -102,12 +102,12 @@ static size_t escape(char *buf, int n)
 
 	if (VALID_VALUE(n)) {
 		/* return snprintf(buf, sizeof("&#1114111;"), "&#%i;", n); */
-		extern const char ruby_digitmap[];
+		static const char digitmap[] = "0123456789";
 		size_t rv = sizeof("&#;") - 1;
 		buf += bytes_for(n);
 		*--buf = ';';
 		do {
-			*--buf = ruby_digitmap[(int)(n % 10)];
+			*--buf = digitmap[(int)(n % 10)];
 			++rv;
 		} while (n /= 10);
 		*--buf = '#';
