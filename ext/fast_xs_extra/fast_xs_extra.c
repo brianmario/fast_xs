@@ -82,8 +82,10 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 			*new_str++ = '+';
 		else {
 			static const char cgi_digitmap[] = "0123456789ABCDEF";
-			new_str[2] = cgi_digitmap[(*s % 16)];
-			new_str[1] = cgi_digitmap[((*s/16) % 16)];
+			unsigned char c = *s;
+
+			new_str[2] = cgi_digitmap[(c % 16)];
+			new_str[1] = cgi_digitmap[((c/16) % 16)];
 			new_str[0] = '%';
 			new_str += 3;
 		}

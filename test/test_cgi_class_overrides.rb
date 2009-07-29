@@ -31,6 +31,14 @@ class TestCgiClassOverrides < Test::Unit::TestCase
     assert_equal 'H3LL0+W0RLD', CGI::escape('H3LL0 W0RLD')
   end
 
+  def test_escape_cgi_high
+    assert_equal '%C3%A8', CGI::escape('è')
+  end
+
+  def test_unescape_cgi_high
+    assert_equal 'è', CGI::unescape('%C3%A8')
+  end
+
   def test_unescape_cgi
     assert_equal 'hello=world', CGI::unescape('hello%3Dworld')
     assert_equal ' ', CGI::unescape('+')
