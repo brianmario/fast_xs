@@ -39,8 +39,8 @@ class TestXmlEscaping < Test::Unit::TestCase
 
   def test_large_document
     if ENV['LARGE_STRING_TEST']
-      assert ('&' * (8192 * 1024)).fast_xs
-      assert ('a' * (8192 * 1024)).fast_xs
+      assert(('&' * (8192 * 1024)).fast_xs)
+      assert(('a' * (8192 * 1024)).fast_xs)
     end
   end
 
