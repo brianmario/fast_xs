@@ -3,6 +3,10 @@
 * 2 bug fixes:
 
   * extra: CGI::escape handles high bits correctly
+    - thanks to Jesse Storimer for helping me find this
   * fix build on systems with poor symbol visibility
+    - thanks to Jeff Solomon for helping me with this
+
+* 1 cleaned up build/packaging/documentation
 
 Browse gitweb for full history: http://fast-xs.rubyforge.org/git?p=fast-xs.git
