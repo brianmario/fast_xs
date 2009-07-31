@@ -128,6 +128,10 @@ static VALUE unpack_uchar(VALUE self)
 	return rb_funcall(self, unpack_id, 1, C_fmt);
 }
 
+/*
+ * escapes strings for XML
+ * The double-quote (") character is translated to "&quot;"
+ */
 static VALUE fast_xs(VALUE self)
 {
 	long i;

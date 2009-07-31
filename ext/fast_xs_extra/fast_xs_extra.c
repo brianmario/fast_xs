@@ -153,6 +153,7 @@ static VALUE _uxs_uri(VALUE self, const unsigned int plus_to_space)
 	return rv;
 }
 
+/* Unescapes CGI, converting plus bytes '+' to space ' ' */
 static VALUE fast_uxs_cgi(VALUE self)
 {
 	return _uxs_uri(self, 1);
