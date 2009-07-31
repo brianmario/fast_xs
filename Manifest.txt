@@ -1,0 +1,17 @@
+.gitignore
+COPYING
+GNUmakefile
+History.txt
+README.txt
+Rakefile
+ext/fast_xs/extconf.rb
+ext/fast_xs/fast_xs.c
+ext/fast_xs/fast_xs_type.h
+ext/fast_xs/gcc.h
+ext/fast_xs/ruby_1_9_compat.h
+ext/fast_xs_extra/extconf.rb
+ext/fast_xs_extra/fast_xs_extra.c
+lib/fast_xs_monkey_patcher.rb
+test/test_cgi_class_overrides.rb
+test/test_erb_util_module_overrides.rb
+test/test_xml_escaping.rb
