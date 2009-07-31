@@ -1,12 +1,13 @@
-=== 0.7.1 / 2009-07-30
+=== 0.7.2 / 2009-07-31
 
-* 2 bug fixes:
+* 1 bug fix:
 
-  * extra: CGI::escape handles high bits correctly
-    - thanks to Jesse Storimer for helping me find this
-  * fix build on systems with poor symbol visibility
-    - thanks to Jeff Solomon for helping me with this
+  * build gem extension correctly on install
+    - thanks to Jesse Storimer for noticing and reporting
 
-* 1 cleaned up build/packaging/documentation
+* 1 packaging fix:
 
-Browse gitweb for full history: http://fast-xs.rubyforge.org/git?p=fast-xs.git
+  * rake-compiler is only needed for cross compiles
+
+Browse gitweb for full history:
+  http://fast-xs.rubyforge.org/git?p=fast-xs.git

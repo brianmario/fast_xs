@@ -8,7 +8,7 @@ rescue LoadError
 end
 
 Hoe.spec('fast_xs') do
-  self.version = '0.7.1'
+  self.version = '0.7.2'
   self.author = 'Eric Wong'
   self.email = 'fast-xs-general@rubyforge.org'
   self.url = 'http://fast-xs.rubyforge.org/'
