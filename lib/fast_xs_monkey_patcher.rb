@@ -22,7 +22,7 @@ class ERB # :nodoc:
   end
 end if defined?(ERB::Util)
 
-class Mongrel # :nodoc:
+module Mongrel # :nodoc:
   class HttpRequest # :nodoc:
     def self.unescape(s); s.fast_uxs_cgi; end
     def self.escape(s); s.to_s.fast_xs_cgi; end
