@@ -1,13 +1,9 @@
-=== 0.7.2 / 2009-07-31
+=== 0.7.3 / 2009-07-31
 
 * 1 bug fix:
 
-  * build gem extension correctly on install
-    - thanks to Jesse Storimer for noticing and reporting
-
-* 1 packaging fix:
-
-  * rake-compiler is only needed for cross compiles
+  * extra: fix Mongrel::HttpRequest monkey patch
+    - thanks (again) to Jesse Storimer for noticing and reporting
 
 Browse gitweb for full history:
   http://fast-xs.rubyforge.org/git?p=fast-xs.git
