@@ -1,8 +1,11 @@
 require 'hoe'
-require 'rake/extensiontask'
-
-Rake::ExtensionTask.new('fast_xs')
-Rake::ExtensionTask.new('fast_xs_extra')
+begin
+  require 'rake/extensiontask'
+  Rake::ExtensionTask.new('fast_xs')
+  Rake::ExtensionTask.new('fast_xs_extra')
+rescue LoadError
+  warn "rake-compiler not available, cross compiling disabled"
+end
 
 Hoe.spec('fast_xs') do
   self.version = '0.7.1'
@@ -11,4 +14,5 @@ Hoe.spec('fast_xs') do
   self.url = 'http://fast-xs.rubyforge.org/'
   self.remote_rdoc_dir = ''
   self.rubyforge_name = 'fast-xs'
+  self.spec_extras = { :extensions => Dir.glob('ext/*/extconf.rb') }
 end
