@@ -1,6 +1,6 @@
 require 'test/unit'
 require 'cgi'
-load 'fast_xs_monkey_patcher.rb'
+require 'fast_xs_monkey_patcher'
 
 class TestCgiClassOverrides < Test::Unit::TestCase
 

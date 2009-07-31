@@ -1,6 +1,6 @@
 require 'erb'
 require 'test/unit'
-load 'fast_xs_monkey_patcher.rb'
+require 'fast_xs_monkey_patcher'
 
 class TestErbUtilModuleOverrides < Test::Unit::TestCase
 
