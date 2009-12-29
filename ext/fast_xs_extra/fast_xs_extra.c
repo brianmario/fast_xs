@@ -4,6 +4,10 @@
 #include "fast_xs_type.h"
 #include "gcc.h"
 
+#define APPEND_CONST(buf, x) do { \
+	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
+} while (0)
+
 /*
  * This is coding agnostic, and works on each byte, so some multibyte
  * character sets may not be fully supported (but UTF-8 should be).
@@ -30,24 +34,18 @@ static VALUE fast_xs_html(VALUE self)
 	rv = rb_str_new(NULL, new_len);
 	new_str = RSTRING_PTR(rv);
 
-#define append_const(buf, x) do { \
-	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
-} while (0)
-
 	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
 		if (unlikely(*s == '&'))
-			append_const(new_str, "&amp;");
+			APPEND_CONST(new_str, "&amp;");
 		else if (unlikely(*s == '<'))
-			append_const(new_str, "&lt;");
+			APPEND_CONST(new_str, "&lt;");
 		else if (unlikely(*s == '>'))
-			append_const(new_str, "&gt;");
+			APPEND_CONST(new_str, "&gt;");
 		else if (unlikely(*s == '"'))
-			append_const(new_str, "&quot;");
+			APPEND_CONST(new_str, "&quot;");
 		else
 			*new_str++ = *s;
 	}
-
-#undef append_const
 
 	return rv;
 }
