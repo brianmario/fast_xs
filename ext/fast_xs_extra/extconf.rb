@@ -1,5 +1,7 @@
 require 'mkmf'
-have_header('assert.h') or exit
-find_header('gcc.h', File.dirname(__FILE__) + '/../fast_xs')
 dir_config('fast_xs_extra')
+have_header('assert.h') or abort 'assert.h not found'
+find_header('gcc.h', File.dirname(__FILE__) + '/../fast_xs')
+have_func("rb_str_set_len", "ruby.h")
+have_func("rb_str_modify", "ruby.h")
 create_makefile('fast_xs_extra')
