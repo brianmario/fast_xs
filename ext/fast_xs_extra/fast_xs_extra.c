@@ -55,6 +55,8 @@ static inline VALUE _xs_html(VALUE self, long once)
 	char *orig_ptr = RSTRING_PTR(self);
 	long orig_len = RSTRING_LEN(self);
 	long new_len = orig_len;
+	long int saved = 0;
+	long n;
 
 	for (s = orig_ptr, i = orig_len; --i >= 0; ++s) {
 		if (unlikely(*s == '&'))
@@ -68,47 +70,39 @@ static inline VALUE _xs_html(VALUE self, long once)
 	rv = rb_str_new(NULL, new_len);
 	new_str = RSTRING_PTR(rv);
 
-	if (once) {
-		long int saved = 0;
-
-		for (s = orig_ptr, i = orig_len; --i >= 0; ++s) {
-			if (unlikely(*s == '&')) {
-				long n = check_xs(s, i);
-
-				if (n) {
-					new_str = memcpy(new_str, s, n) + n;
-					--n;
-					s += n;
-					i -= n;
-					saved += sizeof("&amp;") - sizeof("&");
-				} else {
-					APPEND_CONST(new_str, "&amp;");
-				}
-			} else if (unlikely(*s == '<'))
-				APPEND_CONST(new_str, "&lt;");
-			else if (unlikely(*s == '>'))
-				APPEND_CONST(new_str, "&gt;");
-			else if (unlikely(*s == '"'))
-				APPEND_CONST(new_str, "&quot;");
-			else
-				*new_str++ = *s;
+	for (s = orig_ptr, i = orig_len; --i >= 0; ++s) {
+		if (likely(is_ascii_alnum(*s))) {
+			*new_str++ = *s;
+			continue;
 		}
-		if (saved)
-			rb_str_set_len(rv, new_len - saved);
-	} else {
-		for (s = orig_ptr, i = orig_len; --i >= 0; ++s) {
-			if (unlikely(*s == '&'))
+		switch (*s) {
+		case '"':
+			APPEND_CONST(new_str, "&quot;");
+			break;
+		case '&':
+			n = once ? check_xs(s, i) : 0;
+			if (n) {
+				new_str = memcpy(new_str, s, n) + n;
+				--n;
+				s += n;
+				i -= n;
+				saved += sizeof("&amp;") - sizeof("&");
+			} else {
 				APPEND_CONST(new_str, "&amp;");
-			else if (unlikely(*s == '<'))
-				APPEND_CONST(new_str, "&lt;");
-			else if (unlikely(*s == '>'))
-				APPEND_CONST(new_str, "&gt;");
-			else if (unlikely(*s == '"'))
-				APPEND_CONST(new_str, "&quot;");
-			else
-				*new_str++ = *s;
+			}
+			break;
+		case '<':
+			APPEND_CONST(new_str, "&lt;");
+			break;
+		case '>':
+			APPEND_CONST(new_str, "&gt;");
+			break;
+		default:
+			*new_str++ = *s;
 		}
 	}
+	if (saved)
+		rb_str_set_len(rv, new_len - saved);
 
 	return rv;
 }
