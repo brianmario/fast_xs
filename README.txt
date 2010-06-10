@@ -50,7 +50,7 @@ Rubinius project.
 
 (The MIT License)
 
-Copyright (c) Eric Wong
+Copyright (c) all contributors (see logs in git)
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
