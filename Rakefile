@@ -1,6 +1,6 @@
 require 'hoe'
 hoe = Hoe.spec('fast_xs') do
-  self.version = '0.7.3'
+  self.version = '0.8.0'
   self.author = 'fast_xs hackers'
   self.email = 'fast-xs-general@rubyforge.org'
   self.url = 'http://fast-xs.rubyforge.org/'

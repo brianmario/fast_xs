@@ -1,3 +1,12 @@
+=== 0.8.0 / 2011-01-26
+
+* preserve encoding of original string under Ruby 1.9
+* avoid warnings when monkey patching
+* internal cleanups
+
+Browse gitweb for full history:
+  http://fast-xs.rubyforge.org/git?p=fast-xs.git
+
 === 0.7.3 / 2009-07-31
 
 * 1 bug fix:
