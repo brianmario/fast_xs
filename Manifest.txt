@@ -1,8 +1,8 @@
 .gitignore
 GNUmakefile
-History.txt
+History.rdoc
 Manifest.txt
-README.txt
+README.rdoc
 Rakefile
 ext/fast_xs/extconf.rb
 ext/fast_xs/fast_xs.c
@@ -15,4 +15,6 @@ lib/fast_xs_monkey_patcher.rb
 setup.rb
 test/test_cgi_class_overrides.rb
 test/test_erb_util_module_overrides.rb
+test/test_mongrel_overrides.rb
+test/test_rack_util_overrides.rb
 test/test_xml_escaping.rb

@@ -4,6 +4,8 @@ hoe = Hoe.spec('fast_xs') do
   self.author = 'fast_xs hackers'
   self.email = 'fast-xs-general@rubyforge.org'
   self.url = 'http://fast-xs.rubyforge.org/'
+  self.history_file = 'History.rdoc'
+  self.readme_file = 'README.rdoc'
   self.remote_rdoc_dir = ''
   self.rubyforge_name = 'fast-xs'
   self.spec_extras = { :extensions => Dir.glob('ext/*/extconf.rb') }
