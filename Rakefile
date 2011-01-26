@@ -9,6 +9,13 @@ hoe = Hoe.spec('fast_xs') do
   self.remote_rdoc_dir = ''
   self.rubyforge_name = 'fast-xs'
   self.spec_extras = { :extensions => Dir.glob('ext/*/extconf.rb') }
+  self.extra_rdoc_files = %w(
+    History.rdoc
+    README.rdoc
+    ext/fast_xs/fast_xs.c
+    ext/fast_xs_extra/fast_xs_extra.c
+    lib/fast_xs_monkey_patcher.rb
+  )
 end
 
 # optional rake-compiler support in case somebody needs to cross compile
