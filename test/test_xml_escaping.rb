@@ -37,6 +37,30 @@ class TestXmlEscaping < Test::Unit::TestCase
     assert_equal '&#169;',  "\xC2\xA9".fast_xs     # copy
   end
 
+  def test_iso_8859_1_encoding_preserved
+    copyright = "\xA9"
+    copyright.force_encoding Encoding::ISO_8859_1
+    assert_equal '&#169;', copyright.fast_xs
+    assert copyright.fast_xs.valid_encoding?
+    assert_equal Encoding::ISO_8859_1, copyright.fast_xs.encoding
+  end if defined?(Encoding)
+
+  def test_win_1252_encoding_preserved
+    euro = "\x80"
+    euro.force_encoding Encoding::CP1252
+    assert_equal '&#8364;', euro.fast_xs
+    assert euro.fast_xs.valid_encoding?
+    assert_equal Encoding::CP1252, euro.fast_xs.encoding
+  end if defined?(Encoding)
+
+  def test_utf8_encoding_preserved
+    copy = "\xC2\xA9"
+    copy.force_encoding Encoding::UTF_8
+    assert_equal '&#169;',  copy.fast_xs
+    assert_equal Encoding::UTF_8,  copy.fast_xs.encoding
+    assert copy.fast_xs.valid_encoding?
+  end if defined?(Encoding)
+
   def test_large_document
     if ENV['LARGE_STRING_TEST']
       assert(('&' * (8192 * 1024)).fast_xs)

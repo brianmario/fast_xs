@@ -33,6 +33,21 @@ class TestErbUtilModuleOverrides < Test::Unit::TestCase
     assert_equal 'H3LL0%20W0RLD', url_encode('H3LL0 W0RLD')
   end
 
+  def test_preserve_encoding
+    foo = "foo"
+    foo.force_encoding Encoding::US_ASCII
+    assert_equal Encoding::US_ASCII, url_encode(foo).encoding
+    assert_equal Encoding::US_ASCII, html_escape(foo).encoding
+    assert_equal Encoding::US_ASCII, u(foo).encoding
+    assert_equal Encoding::US_ASCII, h(foo).encoding
+
+    foo.force_encoding Encoding::BINARY
+    assert_equal Encoding::BINARY, url_encode(foo).encoding
+    assert_equal Encoding::BINARY, html_escape(foo).encoding
+    assert_equal Encoding::BINARY, u(foo).encoding
+    assert_equal Encoding::BINARY, h(foo).encoding
+  end
+
   def test_large_strings
     if ENV['LARGE_STRING_TEST']
       assert u('&' * (8192 * 1024))

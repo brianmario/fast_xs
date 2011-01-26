@@ -12,3 +12,18 @@
 #  define RARRAY_LEN(s) (RARRAY(s)->len)
 #endif
 
+#ifdef HAVE_RUBY_ENCODING_H
+#include <ruby/encoding.h>
+static VALUE fast_xs_buf_new(VALUE orig, long len)
+{
+	rb_encoding *enc = rb_enc_get(orig);
+	VALUE str = rb_str_new(NULL, len);
+
+	return rb_enc_associate(str, enc);
+}
+#else /* ! HAVE_RUBY_ENCODING_H */
+static VALUE fast_xs_buf_new(VALUE orig, long len)
+{
+	return rb_str_new(NULL, len);
+}
+#endif /* ! HAVE_RUBY_ENCODING_H */

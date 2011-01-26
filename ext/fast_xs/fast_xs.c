@@ -163,7 +163,7 @@ static VALUE fast_xs(VALUE self)
 			s_len += bytes_for(n) - 1;
 	}
 
-	rv = rb_str_new(NULL, s_len);
+	rv = fast_xs_buf_new(self, s_len);
 	c = RSTRING_PTR(rv);
 
 	for (tmp = RARRAY_PTR(array), i = RARRAY_LEN(array); --i >= 0; tmp++)

@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 require 'test/unit'
 require 'cgi'
 require 'fast_xs_monkey_patcher'
@@ -56,6 +57,21 @@ class TestCgiClassOverrides < Test::Unit::TestCase
     end
   end
 
+  def test_default_encoding_preserved
+    amp = "&"
+    assert_equal Encoding::UTF_8, amp.encoding
+    res = CGI.escapeHTML(amp)
+    assert_equal "&amp;", res
+    assert_equal Encoding::UTF_8, res.encoding
+  end if defined?(Encoding)
 
+  def test_forced_encoding_preserved
+    amp = "&"
+    assert_nothing_raised {
+      amp.force_encoding Encoding::US_ASCII
+    }
+    res = CGI.escapeHTML(amp)
+    assert_equal "&amp;", res
+    assert_equal Encoding::US_ASCII, res.encoding
+  end if defined?(Encoding)
 end
-

@@ -27,7 +27,7 @@ static VALUE fast_xs_html(VALUE self)
 			new_len += (sizeof("&quot;") - 2);
 	}
 
-	rv = rb_str_new(NULL, new_len);
+	rv = fast_xs_buf_new(self, new_len);
 	new_str = RSTRING_PTR(rv);
 
 #define append_const(buf, x) do { \
@@ -72,7 +72,7 @@ static inline VALUE _xs_uri_encode(VALUE self, const unsigned int space_to_plus)
 		new_len += 2;
 	}
 
-	rv = rb_str_new(NULL, new_len);
+	rv = fast_xs_buf_new(self, new_len);
 	new_str = RSTRING_PTR(rv);
 
 	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self); --i >= 0; ++s) {
@@ -132,7 +132,7 @@ static VALUE _uxs_uri(VALUE self, const unsigned int plus_to_space)
 		}
 	}
 
-	rv = rb_str_new(NULL, new_len);
+	rv = fast_xs_buf_new(self, new_len);
 	new_str = RSTRING_PTR(rv);
 
 	for (s = RSTRING_PTR(self), i = RSTRING_LEN(self);
