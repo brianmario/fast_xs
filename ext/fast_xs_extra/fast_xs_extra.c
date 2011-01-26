@@ -5,7 +5,7 @@
 #include "gcc.h"
 
 #define APPEND_CONST(buf, x) do { \
-	buf = memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
+	buf = (char *)memcpy(buf, x, sizeof(x) - 1) + sizeof(x) - 1; \
 } while (0)
 
 /*
