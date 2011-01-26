@@ -15,7 +15,9 @@ end if defined?(CGI)
 class ERB # :nodoc:
   module Util # :nodoc:
     undef_method :html_escape
+    undef_method :h
     undef_method :url_encode
+    undef_method :u
 
     def html_escape(value); value.to_s.fast_xs_html; end
     alias h html_escape
