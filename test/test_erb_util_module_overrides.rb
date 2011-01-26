@@ -46,7 +46,7 @@ class TestErbUtilModuleOverrides < Test::Unit::TestCase
     assert_equal Encoding::BINARY, html_escape(foo).encoding
     assert_equal Encoding::BINARY, u(foo).encoding
     assert_equal Encoding::BINARY, h(foo).encoding
-  end
+  end if defined?(Encoding)
 
   def test_large_strings
     if ENV['LARGE_STRING_TEST']
