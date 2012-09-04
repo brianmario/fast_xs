@@ -29,6 +29,8 @@ static VALUE fast_xs_html(VALUE self)
 			new_len += (sizeof("&gt;") - 2);
 		else if (unlikely(*s == '"'))
 			new_len += (sizeof("&quot;") - 2);
+		else if (unlikely(*s == '\''))
+			new_len += (sizeof("&#x27;") - 2);
 	}
 
 	rv = fast_xs_buf_new(self, new_len);
@@ -43,6 +45,8 @@ static VALUE fast_xs_html(VALUE self)
 			APPEND_CONST(new_str, "&gt;");
 		else if (unlikely(*s == '"'))
 			APPEND_CONST(new_str, "&quot;");
+		else if (unlikely(*s == '\''))
+			APPEND_CONST(new_str, "&#x27;");
 		else
 			*new_str++ = *s;
 	}

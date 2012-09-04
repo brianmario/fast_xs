@@ -14,6 +14,7 @@ class TestXmlEscaping < Test::Unit::TestCase
     assert_equal '&lt;',  '<'.fast_xs              # left angle bracket
     assert_equal '&gt;',  '>'.fast_xs              # right angle bracket
     assert_equal '&quot;', '"'.fast_xs             # double quote
+    assert_equal '&#x27;', '\''.fast_xs            # single quote
   end
 
   def test_invalid

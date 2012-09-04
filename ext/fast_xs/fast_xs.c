@@ -82,6 +82,8 @@ static size_t escape(char *buf, int n)
 		if (likely(n >= 0x20 || n == '\t' || n == '\n' || n == '\r')) {
 			if (unlikely(n == '"'))
 				return_const_len("&quot;");
+			if (unlikely(n == '\''))
+				return_const_len("&#x27;");
 			if (unlikely(n == '&'))
 				return_const_len("&amp;");
 			if (unlikely(n == '<'))
@@ -150,6 +152,8 @@ static VALUE fast_xs(VALUE self)
 		if (likely(n < 128)) {
 			if (unlikely(n == '"'))
 				s_len += (sizeof("&quot;") - 2);
+			if (unlikely(n == '\''))
+				s_len += (sizeof("&#x27;") - 2);
 			if (unlikely(n == '&'))
 				s_len += (sizeof("&amp;") - 2);
 			if (unlikely(n == '>' || n == '<'))

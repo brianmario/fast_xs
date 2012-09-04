@@ -9,6 +9,7 @@ class TestErbUtilModuleOverrides < Test::Unit::TestCase
   def test_escape_html_predefined
     assert_equal '&amp;', html_escape('&')
     assert_equal '&quot;', html_escape('"')
+    assert_equal '&#x27;', html_escape('\'')
     assert_equal '&lt;', html_escape('<')
     assert_equal '&gt;', html_escape('>')
   end

@@ -8,6 +8,7 @@ class TestCgiClassOverrides < Test::Unit::TestCase
   def test_escape_html_predefined
     assert_equal '&amp;', CGI::escapeHTML('&')
     assert_equal '&quot;', CGI::escapeHTML('"')
+    assert_equal '&#x27;', CGI::escapeHTML('\'')
     assert_equal '&lt;', CGI::escapeHTML('<')
     assert_equal '&gt;', CGI::escapeHTML('>')
   end
