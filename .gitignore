@@ -9,3 +9,5 @@ Makefile
 /doc
 /.config
 /InstalledFiles
+.source_index
+Gemfile.lock

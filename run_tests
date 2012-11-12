@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ruby setup.rb
+bundle exec rake test
