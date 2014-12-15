@@ -36,11 +36,13 @@ class TestErbUtilModuleOverrides < Test::Unit::TestCase
 
   def test_preserve_encoding
     foo = "foo"
-    foo.force_encoding Encoding::US_ASCII
-    assert_equal Encoding::US_ASCII, url_encode(foo).encoding
-    assert_equal Encoding::US_ASCII, html_escape(foo).encoding
-    assert_equal Encoding::US_ASCII, u(foo).encoding
-    assert_equal Encoding::US_ASCII, h(foo).encoding
+    ascii_encoding = (RUBY_VERSION =~ /1\.9/) ? Encoding::ASCII_8BIT : Encoding::US_ASCII
+
+    foo.force_encoding ascii_encoding
+    assert_equal ascii_encoding, url_encode(foo).encoding
+    assert_equal ascii_encoding, html_escape(foo).encoding
+    assert_equal ascii_encoding, u(foo).encoding
+    assert_equal ascii_encoding, h(foo).encoding
 
     foo.force_encoding Encoding::BINARY
     assert_equal Encoding::BINARY, url_encode(foo).encoding
