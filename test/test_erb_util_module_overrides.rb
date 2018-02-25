@@ -1,8 +1,8 @@
 require 'erb'
-require 'test/unit'
+require 'minitest/autorun'
 require 'fast_xs_monkey_patcher'
 
-class TestErbUtilModuleOverrides < Test::Unit::TestCase
+class TestErbUtilModuleOverrides < Minitest::Test
 
   include ERB::Util
 

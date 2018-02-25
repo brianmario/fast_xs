@@ -1,12 +1,12 @@
 require 'rack'
 $orig_escape = Rack::Utils.method(:escape)
 $orig_unescape = Rack::Utils.method(:unescape)
-require 'test/unit'
+require 'minitest/autorun'
 require 'fast_xs_monkey_patcher'
 
 # copied and translated to Test::Unit from test/spec_utils.rb in rack
 
-class TestRackUtilModuleOverrides < Test::Unit::TestCase
+class TestRackUtilModuleOverrides < Minitest::Test
 
   def test_overidden
     assert $orig_escape != Rack::Utils.method(:escape)
