@@ -1,6 +1,6 @@
 require 'erb'
 require 'minitest/autorun'
-load 'fast_xs_monkey_patcher.rb'
+load './lib/fast_xs_monkey_patcher.rb'
 
 class TestErbUtilModuleOverrides < Minitest::Test
 

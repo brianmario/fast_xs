@@ -18,10 +18,20 @@ hoe = Hoe.spec('fast_xs') do
 end
 
 # optional rake-compiler support in case somebody needs to cross compile
-begin
-  require 'rake/extensiontask'
-  Rake::ExtensionTask.new('fast_xs', hoe.spec)
-  Rake::ExtensionTask.new('fast_xs_extra', hoe.spec)
-rescue LoadError
-  warn "rake-compiler not available, cross compiling disabled"
+if RUBY_PLATFORM =~ /java/
+  begin
+    require 'rake/javaextensiontask'
+    Rake::JavaExtensionTask.new('fast_xs', hoe.spec)
+    Rake::JavaExtensionTask.new('fast_xs_extra', hoe.spec)
+  rescue LoadError
+    warn "rake-compiler not available, cross compiling disabled"
+  end
+else
+  begin
+    require 'rake/extensiontask'
+    Rake::ExtensionTask.new('fast_xs', hoe.spec)
+    Rake::ExtensionTask.new('fast_xs_extra', hoe.spec)
+  rescue LoadError
+    warn "rake-compiler not available, cross compiling disabled"
+  end
 end

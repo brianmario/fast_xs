@@ -1,4 +1,4 @@
-require 'fast_xs'
+require './lib/fast_xs'
 require 'minitest/autorun'
 
 # Based on Sam's original xchar.rb tests:
