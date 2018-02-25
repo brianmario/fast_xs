@@ -2,7 +2,7 @@ require 'rack'
 $orig_escape = Rack::Utils.method(:escape)
 $orig_unescape = Rack::Utils.method(:unescape)
 require 'minitest/autorun'
-require 'fast_xs_monkey_patcher'
+load 'fast_xs_monkey_patcher.rb'
 
 # copied and translated to Test::Unit from test/spec_utils.rb in rack
 

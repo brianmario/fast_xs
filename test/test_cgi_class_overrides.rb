@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 require 'minitest/autorun'
 require 'cgi'
-require 'fast_xs_monkey_patcher'
+load 'fast_xs_monkey_patcher.rb'
 
 
 class TestCgiClassOverrides < Minitest::Test

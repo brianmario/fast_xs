@@ -7,7 +7,7 @@ rescue SyntaxError,LoadError => e
 end
 
 require 'minitest/autorun'
-require 'fast_xs_monkey_patcher'
+load 'fast_xs_monkey_patcher.rb'
 
 class TestMongrelHttpOverrides < Minitest::Test
   def test_escape
