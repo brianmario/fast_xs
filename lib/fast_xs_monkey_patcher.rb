@@ -1,5 +1,5 @@
-require 'fast_xs'
-require 'fast_xs_extra'
+require File.expand_path('../fast_xs', __FILE__)
+require File.expand_path('../fast_xs_extra', __FILE__)
 
 class CGI # :nodoc:
   class << self
