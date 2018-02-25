@@ -1,5 +1,11 @@
-require File.expand_path('../fast_xs', __FILE__)
-require File.expand_path('../fast_xs_extra', __FILE__)
+begin
+  require 'fast_xs'
+  require 'fast_xs_extra'
+rescue LoadError
+  require File.expand_path('../fast_xs', __FILE__)
+  require File.expand_path('../fast_xs_extra', __FILE__)
+end
+
 
 class CGI # :nodoc:
   class << self
