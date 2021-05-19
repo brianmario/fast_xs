@@ -1,9 +1,10 @@
 # -*- encoding: utf-8 -*-
-require 'test/unit'
+require 'minitest/autorun'
 require 'cgi'
-require 'fast_xs_monkey_patcher'
+load './lib/fast_xs_monkey_patcher.rb'
 
-class TestCgiClassOverrides < Test::Unit::TestCase
+
+class TestCgiClassOverrides < Minitest::Test
 
   def test_escape_html_predefined
     assert_equal '&amp;', CGI::escapeHTML('&')
@@ -68,9 +69,7 @@ class TestCgiClassOverrides < Test::Unit::TestCase
 
   def test_forced_encoding_preserved
     amp = "&"
-    assert_nothing_raised {
-      amp.force_encoding Encoding::US_ASCII
-    }
+    amp.force_encoding Encoding::US_ASCII
     res = CGI.escapeHTML(amp)
     assert_equal "&amp;", res
     assert_equal Encoding::US_ASCII, res.encoding

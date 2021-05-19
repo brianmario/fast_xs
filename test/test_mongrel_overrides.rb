@@ -6,10 +6,10 @@ rescue SyntaxError,LoadError => e
   warn "skipping Mongrel test, Mongrel not available or broken under 1.9.2"
 end
 
-require 'test/unit'
-require 'fast_xs_monkey_patcher'
+require 'minitest/autorun'
+load 'fast_xs_monkey_patcher.rb'
 
-class TestMongrelHttpOverrides < Test::Unit::TestCase
+class TestMongrelHttpOverrides < Minitest::Test
   def test_escape
     assert_equal "%2B", Mongrel::HttpRequest.escape("+")
   end

@@ -1,0 +1,24 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    hoe (3.16.2)
+      rake (>= 0.8, < 13.0)
+    minitest (5.11.3)
+    rack (2.0.4)
+    rake (0.9.3)
+    rake-compiler (1.0.4)
+      rake
+
+PLATFORMS
+  java
+  ruby
+
+DEPENDENCIES
+  hoe
+  minitest
+  rack
+  rake (= 0.9.3)
+  rake-compiler
+
+BUNDLED WITH
+   1.16.1

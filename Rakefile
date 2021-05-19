@@ -7,7 +7,6 @@ hoe = Hoe.spec('fast_xs') do
   self.history_file = 'History.rdoc'
   self.readme_file = 'README.rdoc'
   self.remote_rdoc_dir = ''
-  self.rubyforge_name = 'fast-xs'
   self.spec_extras = { :extensions => Dir.glob('ext/*/extconf.rb') }
   self.extra_rdoc_files = %w(
     History.rdoc
@@ -19,10 +18,20 @@ hoe = Hoe.spec('fast_xs') do
 end
 
 # optional rake-compiler support in case somebody needs to cross compile
-begin
-  require 'rake/extensiontask'
-  Rake::ExtensionTask.new('fast_xs', hoe.spec)
-  Rake::ExtensionTask.new('fast_xs_extra', hoe.spec)
-rescue LoadError
-  warn "rake-compiler not available, cross compiling disabled"
+if RUBY_PLATFORM =~ /java/
+  begin
+    require 'rake/javaextensiontask'
+    Rake::JavaExtensionTask.new('fast_xs', hoe.spec)
+    Rake::JavaExtensionTask.new('fast_xs_extra', hoe.spec)
+  rescue LoadError
+    warn "rake-compiler not available, cross compiling disabled"
+  end
+else
+  begin
+    require 'rake/extensiontask'
+    Rake::ExtensionTask.new('fast_xs', hoe.spec)
+    Rake::ExtensionTask.new('fast_xs_extra', hoe.spec)
+  rescue LoadError
+    warn "rake-compiler not available, cross compiling disabled"
+  end
 end

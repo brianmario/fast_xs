@@ -1,9 +1,9 @@
-require 'fast_xs'
-require 'test/unit'
+require './lib/fast_xs'
+require 'minitest/autorun'
 
 # Based on Sam's original xchar.rb tests:
 
-class TestXmlEscaping < Test::Unit::TestCase
+class TestXmlEscaping < Minitest::Test
 
   def test_ascii
     assert_equal 'abc', 'abc'.fast_xs

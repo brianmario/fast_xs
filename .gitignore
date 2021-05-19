@@ -10,4 +10,4 @@ Makefile
 /.config
 /InstalledFiles
 .source_index
-Gemfile.lock
+/tmp
